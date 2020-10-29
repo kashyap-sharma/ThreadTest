@@ -4,8 +4,11 @@ import android.os.Handler
 import android.os.Message
 import android.util.Log
 
-class DownloadHandler : Handler() {
-
+class DownloadHandler(mainActivity: MainActivity) : Handler() {
+    var mainActivity :MainActivity?=null
+    init {
+        this.mainActivity = mainActivity
+    }
     val TAG = "sweet"
     override fun handleMessage(msg: Message) {
         downloadSong(msg.obj.toString())
@@ -20,6 +23,12 @@ class DownloadHandler : Handler() {
             e.printStackTrace()
         }
         Log.d(TAG, "$song : Download Completed")
+        mainActivity?.runOnUiThread(object :Runnable{
+            override fun run() {
+                mainActivity?.log(song)
+            }
+
+        })
 
     }
 }

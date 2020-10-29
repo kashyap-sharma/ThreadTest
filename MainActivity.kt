@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        thread = DownloadThread()
+        thread = DownloadThread(this@MainActivity)
         thread?.name = "Kashyap's Thread"
         thread?.start()
         text?.append("I am running\n")
@@ -55,12 +55,15 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         clear?.setOnClickListener(this)
     }
 
-    private fun shows(b: Boolean) {
+    public fun shows(b: Boolean) {
         if(b){
             pr?.visibility = View.VISIBLE
         }else{
             pr?.visibility = View.GONE
         }
+    }
+    public fun log(b: String) {
+        Log.d(TAG, "log: $b")
     }
 
     var text : TextView ? = null
