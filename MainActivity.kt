@@ -12,36 +12,25 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() , View.OnClickListener{
-    var text : TextView ? = null
-    var run : Button ? = null
-    var clear : Button ? = null
-    var pr : ProgressBar ? = null
-    val TAG = "Sweet"
-    val MESSAGE_KEY = "message_key"
-    var handler : Handler ? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        thread = DownloadThread()
+        thread?.name = "Kashyap's Thread"
+        thread?.start()
+        text?.append("I am running\n")
         initViews()
     }
 
-    private fun initViews() {
-        //handler with looper handling the message sned
-        handler= object : Handler(Looper.getMainLooper()){
-            override fun handleMessage(msg: Message) {
-                text?.text = msg.data.getString(MESSAGE_KEY)
-            }
+    private fun runsome() {
+        shows(true)
+        //send message to download handler
+        for (song in Playlist.songs){
+            val message = Message.obtain()
+            message.obj = song
+            thread?.downloadHandler?.sendMessage(message)
         }
-
-
-        text = findViewById(R.id.textView)
-        run = findViewById(R.id.button)
-        clear = findViewById(R.id.button2)
-        pr = findViewById(R.id.progressBar)
-        pr?.visibility = View.GONE
-        run?.setOnClickListener(this)
-        clear?.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -55,6 +44,17 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         text?.text = ""
     }
 
+    private fun initViews() {
+        //handler with looper handling the message send
+        text = findViewById(R.id.textView)
+        run = findViewById(R.id.button)
+        clear = findViewById(R.id.button2)
+        pr = findViewById(R.id.progressBar)
+        pr?.visibility = View.GONE
+        run?.setOnClickListener(this)
+        clear?.setOnClickListener(this)
+    }
+
     private fun shows(b: Boolean) {
         if(b){
             pr?.visibility = View.VISIBLE
@@ -63,22 +63,14 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         }
     }
 
-    private fun runsome() {
-        shows(true)
-
-//        for (song in Playlist.songs){
-//            val thread =DownloadThread(song)
-//            thread.name = "Kashyap's Thread"
-//            thread.start()
-//        }
-        // Downloading songs together
-
-        val thread =DownloadThread()
-        thread.name = "Kashyap's Thread"
-        thread.start()
-        text?.append("I am running\n")
-
-    }
+    var text : TextView ? = null
+    var run : Button ? = null
+    var clear : Button ? = null
+    var pr : ProgressBar ? = null
+    val TAG = "Sweet"
+    val MESSAGE_KEY = "message_key"
+    var handler : Handler ? =null
+    var thread: DownloadThread ? =null
 
 
 
