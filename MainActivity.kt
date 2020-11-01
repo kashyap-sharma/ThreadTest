@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() , View.OnClickListener{
     //Example of ExecuterService
-    //Classes used  : Work
+    //Classes used  : Work 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
 
     private fun clearsome() {
         textss?.text = ""
-    } 
+    }
 
     private fun initViews() {
 
