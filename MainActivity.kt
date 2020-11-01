@@ -8,30 +8,29 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.util.rangeTo
 import androidx.fragment.app.FragmentManager
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-class MainActivity : AppCompatActivity() , View.OnClickListener, AsyncFragment.MyTaskHandler{
-
+class MainActivity : AppCompatActivity() , View.OnClickListener{
+    //Example of ExecuterService
+    //Classes used  : Work
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //
         initViews()
-        mFragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as AsyncFragment?
-        if (mFragment == null){
-            mFragment = AsyncFragment()
-            supportFragmentManager.beginTransaction().add(mFragment!!,FRAGMENT_TAG).commit()
-        }
+
     }
 
     private fun runsome() {
-       mFragment?.runTask()
+        for ( i in 0 until 10){
+            val work = Work(i+1)
+            executorService?.execute(work)
+        }
     }
 
-    override fun handleTask(message: String?) {
-        textss?.append(message+"\n")
-    }
+
 
     override fun onClick(p0: View?) {
         when(p0?.id){
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() , View.OnClickListener, AsyncFragment.M
 
     private fun clearsome() {
         textss?.text = ""
-    }
+    } 
 
     private fun initViews() {
 
@@ -54,6 +53,14 @@ class MainActivity : AppCompatActivity() , View.OnClickListener, AsyncFragment.M
         run?.setOnClickListener(this)
         clear?.setOnClickListener(this)
         textss?.text="I am running\n"
+
+        executorService = Executors.newFixedThreadPool(5)
+        //Creating pool of 5 threads
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        executorService?.shutdown()
     }
 
     public fun shows(b: Boolean) {
@@ -75,10 +82,9 @@ class MainActivity : AppCompatActivity() , View.OnClickListener, AsyncFragment.M
     var run : Button ? = null
     var clear : Button ? = null
     var pr : ProgressBar ? = null
-    val MESSAGE_KEY = "message_key"
-    val FRAGMENT_TAG = "fragment_tag"
-    var mtaskRunning:Boolean = true
-    private var mFragment:AsyncFragment?=null
+    var executorService: ExecutorService ?=null
+
+
 
     
 
