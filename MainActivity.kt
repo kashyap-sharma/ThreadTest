@@ -1,36 +1,36 @@
 package com.kashyap.threadtest
 
+import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 
-class MainActivity : AppCompatActivity() , View.OnClickListener{
+class MainActivity : AppCompatActivity() , View.OnClickListener, AsyncFragment.MyTaskHandler{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        thread = DownloadThread(this@MainActivity)
-        thread?.name = "Kashyap's Thread"
-        thread?.start()
-        text?.append("I am running\n")
+
+        //
         initViews()
+        mFragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as AsyncFragment?
+        if (mFragment == null){
+            mFragment = AsyncFragment()
+            supportFragmentManager.beginTransaction().add(mFragment!!,FRAGMENT_TAG).commit()
+        }
     }
 
     private fun runsome() {
-        shows(true)
-        //send message to download handler
-        for (song in Playlist.songs){
-            val message = Message.obtain()
-            message.obj = song
-            thread?.downloadHandler?.sendMessage(message)
-        }
+       mFragment?.runTask()
+    }
+
+    override fun handleTask(message: String?) {
+        textss?.append(message+"\n")
     }
 
     override fun onClick(p0: View?) {
@@ -41,18 +41,19 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
     }
 
     private fun clearsome() {
-        text?.text = ""
+        textss?.text = ""
     }
 
     private fun initViews() {
-        //handler with looper handling the message send
-        text = findViewById(R.id.textView)
+
+        textss = findViewById(R.id.textView)
         run = findViewById(R.id.button)
         clear = findViewById(R.id.button2)
         pr = findViewById(R.id.progressBar)
         pr?.visibility = View.GONE
         run?.setOnClickListener(this)
         clear?.setOnClickListener(this)
+        textss?.text="I am running\n"
     }
 
     public fun shows(b: Boolean) {
@@ -66,14 +67,20 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         Log.d(TAG, "log: $b")
     }
 
-    var text : TextView ? = null
+    companion object{
+        private val TAG = "Sweet"
+        var textss : TextView ? = null
+    }
+
     var run : Button ? = null
     var clear : Button ? = null
     var pr : ProgressBar ? = null
-    val TAG = "Sweet"
     val MESSAGE_KEY = "message_key"
-    var handler : Handler ? =null
-    var thread: DownloadThread ? =null
+    val FRAGMENT_TAG = "fragment_tag"
+    var mtaskRunning:Boolean = true
+    private var mFragment:AsyncFragment?=null
+
+    
 
 
 
